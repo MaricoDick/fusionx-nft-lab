@@ -1,0 +1,10 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="40" fill="#FFF7E9"/>
+  <circle cx="210" cy="172" r="120" fill="#6EC1FF" fill-opacity="0.38"/>
+  <circle cx="1018" cy="650" r="158" fill="#FFCC8A" fill-opacity="0.45"/>
+  <rect x="90" y="92" width="1020" height="616" rx="42" fill="white" fill-opacity="0.8"/>
+  <text x="150" y="240" fill="#2D3B46" font-family="Arial, sans-serif" font-size="74" font-weight="700">FusionX NFT Lab</text>
+  <text x="150" y="324" fill="#566977" font-family="Arial, sans-serif" font-size="34">Build a squad, burn 3 matching NFTs, and let onchain luck decide your next evolution.</text>
+  <rect x="150" y="392" width="262" height="76" rx="22" fill="#6EC1FF"/>
+  <text x="214" y="439" fill="#14344D" font-family="Arial, sans-serif" font-size="29" font-weight="700">Start Battle</text>
+</svg>

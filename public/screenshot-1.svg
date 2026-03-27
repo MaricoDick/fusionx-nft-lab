@@ -1,0 +1,11 @@
+<svg width="1170" height="2532" viewBox="0 0 1170 2532" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1170" height="2532" rx="48" fill="#E6F6FF"/>
+  <rect x="54" y="110" width="1062" height="2312" rx="44" fill="#FFF7E9"/>
+  <text x="118" y="252" fill="#2D3B46" font-family="Arial, sans-serif" font-size="74" font-weight="700">FusionX Battle Arena</text>
+  <rect x="118" y="340" width="934" height="640" rx="36" fill="white"/>
+  <rect x="118" y="1028" width="460" height="420" rx="32" fill="#DDF2FF"/>
+  <rect x="592" y="1028" width="460" height="420" rx="32" fill="#FFF0D8"/>
+  <rect x="118" y="1494" width="934" height="154" rx="28" fill="#6EC1FF"/>
+  <text x="390" y="1588" fill="#173B54" font-family="Arial, sans-serif" font-size="50" font-weight="700">Start Battle</text>
+  <rect x="118" y="1700" width="934" height="530" rx="32" fill="white"/>
+</svg>
