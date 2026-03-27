@@ -68,9 +68,9 @@ export function CollectionView() {
     <>
       <section className="page-header">
         <span className="eyebrow">Collection</span>
-        <h1>你的实验体、进阶体和稀有成果，都按柔和的方式陈列在这里。</h1>
+        <h1>Your base creatures, upgraded forms, and rare outcomes are all laid out here in one soft gallery.</h1>
         <p>
-          这个页面专注查看持仓，不把信息塞进复杂图表。每一枚 NFT 都能看到 tier 与 token id，方便你决定下一步合成策略。
+          This page is focused on holdings, not charts. Each NFT shows its tier and token id so you can decide your next fusion strategy quickly.
         </p>
       </section>
 
@@ -79,15 +79,15 @@ export function CollectionView() {
           <div className="collection-header">
             <div>
               <span className="card-kicker">Owned Tokens</span>
-              <h2>我的 NFT</h2>
+              <h2>My NFTs</h2>
             </div>
             <div className="collection-count">{ownedTokens.length}</div>
           </div>
 
           {!isConnected ? (
-            <p className="helper-text">连接钱包后，这里会显示你在 FusionX 合约里的 NFT。</p>
+            <p className="helper-text">Connect your wallet to see the NFTs you hold in the FusionX contract.</p>
           ) : ownedTokens.length === 0 ? (
-            <p className="helper-text">你还没有持有 NFT，先去实验室 mint 一枚基础体吧。</p>
+            <p className="helper-text">You do not hold any NFTs yet. Head to the lab and mint a base one first.</p>
           ) : (
             <div className="token-list">
               {ownedTokens.map((token) => (
@@ -105,7 +105,7 @@ export function CollectionView() {
 
         <article className="collection-panel">
           <span className="card-kicker">Tier Summary</span>
-          <h2>当前分布</h2>
+          <h2>Current distribution</h2>
           <div className="status-stack">
             {grouped.map((item) => (
               <div key={item.tier} className="status-row">

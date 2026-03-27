@@ -6,7 +6,7 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fusionx-nft-lab.verce
 
 export const metadata: Metadata = {
   title: "FusionX NFT Lab",
-  description: "用户燃烧多个 NFT 合成高级 NFT，链上概率控制稀有度。",
+  description: "Burn multiple NFTs to mint higher-tier outcomes, with rarity shaped by onchain probability.",
   applicationName: "FusionX NFT Lab",
   metadataBase: new URL(appUrl),
   openGraph: {
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <head>
         <meta name="base:app_id" content="69c5fc322f29a15e2b91ecec" />
         <meta

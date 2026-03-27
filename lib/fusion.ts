@@ -4,10 +4,10 @@ type TokenRecord = {
 };
 
 const tierDescriptions: Record<number, string> = {
-  1: "基础实验体，适合做第一次合成。",
-  2: "轻度进阶体，成功率开始收紧。",
-  3: "高阶候选体，继续合成更刺激。",
-  4: "终阶稀有体，不能再继续向上融合。"
+  1: "Base creature, ideal for your first fusion attempt.",
+  2: "Early upgrade form, where the odds begin to tighten.",
+  3: "High-tier candidate, with more risk and more excitement.",
+  4: "Final rare form, no longer eligible for upward fusion."
 };
 
 export function getTierLabel(tier: number) {

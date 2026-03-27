@@ -115,12 +115,12 @@ export function LabView() {
 
   const onMint = async () => {
     if (!isConnected || !address) {
-      setFeedback("请先连接钱包后再铸造。");
+      setFeedback("Connect your wallet before minting.");
       return;
     }
 
     try {
-      setFeedback("正在发送 mint 交易...");
+      setFeedback("Submitting mint transaction...");
       setSuccessNote("");
       const txHash = await writeContractAsync({
         ...fusionContract,
@@ -129,28 +129,28 @@ export function LabView() {
       });
 
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-00X", "FusionX NFT Lab", address, txHash);
+      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
       setFeedback("");
-      setSuccessNote(`Mint 成功，交易哈希：${txHash}`);
+      setSuccessNote(`Mint confirmed: ${txHash}`);
       await refetch();
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "Mint 失败，请稍后重试。");
+      setFeedback(error instanceof Error ? error.message : "Mint failed. Please try again.");
     }
   };
 
   const onFuse = async () => {
     if (!isConnected || !address) {
-      setFeedback("请先连接钱包后再尝试合成。");
+      setFeedback("Connect your wallet before fusing.");
       return;
     }
 
     if (selectedTokens.length !== 3) {
-      setFeedback("请选择 3 枚同阶 NFT 进行合成。");
+      setFeedback("Select 3 NFTs of the same tier to fuse.");
       return;
     }
 
     try {
-      setFeedback("正在发送 fuse 交易...");
+      setFeedback("Submitting fusion transaction...");
       setSuccessNote("");
       const txHash = await writeContractAsync({
         ...fusionContract,
@@ -160,13 +160,13 @@ export function LabView() {
       });
 
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-00X", "FusionX NFT Lab", address, txHash);
+      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
       setFeedback("");
-      setSuccessNote(`Fusion 交易已确认：${txHash}`);
+      setSuccessNote(`Fusion confirmed: ${txHash}`);
       setSelectedTokens([]);
       await refetch();
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "Fusion 失败，请稍后重试。");
+      setFeedback(error instanceof Error ? error.message : "Fusion failed. Please try again.");
     }
   };
 
@@ -174,9 +174,9 @@ export function LabView() {
     <>
       <section className="page-header">
         <span className="eyebrow">Lab Console</span>
-        <h1>在轻盈的实验台上，挑选三枚同阶藏品，等待概率开花。</h1>
+        <h1>Pick three matching NFTs on a calmer control panel and wait for the onchain odds to bloom.</h1>
         <p>
-          合约已经部署在 Base 上。每次合成会燃烧三枚同阶 NFT，成功时铸造更高 tier，失败时则只保留实验记录。
+          The contract is already live on Base. Every fusion burns three NFTs of the same tier, then mints a higher tier if the probability check succeeds.
         </p>
       </section>
 
@@ -185,35 +185,35 @@ export function LabView() {
           <div className="lab-topbar">
             <div>
               <span className="card-kicker">Wallet</span>
-              <h2>实验状态</h2>
+              <h2>Lab status</h2>
             </div>
             <div className="wallet-chip">
               <span className="wallet-dot" />
-              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "未连接"}
+              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
             </div>
           </div>
 
           <div className="lab-summary">
             <div className="summary-tile">
-              <span>持有总数</span>
+              <span>Total held</span>
               <strong>{ownedTokens.length}</strong>
             </div>
             <div className="summary-tile">
-              <span>当前筛选</span>
+              <span>Current filter</span>
               <strong>{getTierLabel(selectedTier)}</strong>
             </div>
             <div className="summary-tile">
-              <span>已选择</span>
+              <span>Selected</span>
               <strong>{selectedTokens.length} / 3</strong>
             </div>
           </div>
 
           <div className="inline-actions">
             <button type="button" className="button button-primary" onClick={onMint} disabled={isPending}>
-              Mint 初始 NFT
+              Mint Base NFT
             </button>
             <button type="button" className="button button-accent" onClick={onFuse} disabled={isPending}>
-              开始融合
+              Start Fusion
             </button>
           </div>
 
@@ -232,7 +232,7 @@ export function LabView() {
 
           <div>
             <span className="card-kicker">Tier Selection</span>
-            <h2>选择要参与合成的 NFT</h2>
+            <h2>Select the NFTs you want to fuse</h2>
             {currentTierTokens.length > 0 ? (
               <div className="selection-grid">
                 {currentTierTokens.map((token) => {
@@ -251,12 +251,12 @@ export function LabView() {
                 })}
               </div>
             ) : (
-              <p className="token-empty">当前 tier 暂时没有可用于合成的 NFT。</p>
+              <p className="token-empty">No NFTs are available for this tier right now.</p>
             )}
           </div>
 
           <p className="helper-text">
-            合成规则：3 枚 Tier 1 成功率 80%，Tier 2 成功率 70%，Tier 3 成功率 60%，Tier 4 为最高阶不可继续合成。
+            Fusion rules: Tier 1 succeeds at 80%, Tier 2 at 70%, Tier 3 at 60%, and Tier 4 is the final class.
           </p>
 
           {feedback ? <div className="notice">{feedback}</div> : null}
@@ -267,7 +267,7 @@ export function LabView() {
           <div className="panel-heading">
             <div>
               <span className="card-kicker">Inventory Overview</span>
-              <h2>你的分层收藏</h2>
+              <h2>Your tier spread</h2>
             </div>
           </div>
           <div className="status-stack">

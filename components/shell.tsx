@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const navItems = [
-  { href: "/", label: "首页" },
-  { href: "/lab", label: "实验室" },
-  { href: "/collection", label: "藏品" },
-  { href: "/guide", label: "玩法" }
+  { href: "/", label: "Home" },
+  { href: "/lab", label: "Lab" },
+  { href: "/collection", label: "Collection" },
+  { href: "/guide", label: "Guide" }
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {

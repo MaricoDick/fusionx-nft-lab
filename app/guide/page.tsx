@@ -6,10 +6,9 @@ export default function GuidePage() {
     <Shell>
       <section className="page-header">
         <span className="eyebrow">Guidebook</span>
-        <h1>FusionX 的玩法，不靠吵闹的仪表盘，也能很清楚。</h1>
+        <h1>FusionX keeps the rules clear without turning the app into a noisy dashboard.</h1>
         <p>
-          这个 Mini App
-          把操作拆成简单流程：连接钱包、铸造初始体、挑选三枚同阶 NFT 合成，并在成功时获得更高阶 NFT。
+          The Mini App breaks the loop into a simple flow: connect your wallet, mint base NFTs, pick three matching NFTs, and wait for the upgraded onchain outcome.
         </p>
       </section>
 
