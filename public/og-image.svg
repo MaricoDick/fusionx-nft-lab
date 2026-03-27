@@ -1,0 +1,10 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" rx="36" fill="#F8F6F1"/>
+  <circle cx="220" cy="160" r="120" fill="#6EC1FF" fill-opacity="0.28"/>
+  <circle cx="980" cy="420" r="150" fill="#FFE66D" fill-opacity="0.32"/>
+  <rect x="120" y="108" width="960" height="414" rx="36" fill="white" fill-opacity="0.76"/>
+  <text x="170" y="242" fill="#2D3B46" font-family="Arial, sans-serif" font-size="66" font-weight="700">FusionX NFT Lab</text>
+  <text x="170" y="320" fill="#6F7F8F" font-family="Arial, sans-serif" font-size="34">Burn 3 NFTs, fuse rarity, and mint higher tiers on Base.</text>
+  <rect x="170" y="376" width="240" height="66" rx="18" fill="#6EC1FF"/>
+  <text x="228" y="418" fill="#2D3B46" font-family="Arial, sans-serif" font-size="28" font-weight="700">Mini App</text>
+</svg>

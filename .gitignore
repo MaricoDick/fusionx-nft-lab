@@ -1,0 +1,10 @@
+.next
+node_modules
+.vercel
+out
+dist
+*.log
+*.tsbuildinfo
+.env
+.env.local
+.env.production
