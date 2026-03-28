@@ -1,66 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAccount, useReadContract, useReadContracts } from "wagmi";
-import { fusionAbi, fusionContract } from "@/lib/contracts";
 import { getTierLabel, summarizeByTier } from "@/lib/fusion";
-
-type TokenRecord = {
-  tokenId: number;
-  tier: number;
-};
-
-const maxScan = Array.from({ length: 36 }, (_, index) => BigInt(index + 1));
+import { useOwnedTokens } from "@/lib/use-owned-tokens";
 
 export function CollectionView() {
-  const { address, isConnected } = useAccount();
-
-  const { data: nextId } = useReadContract({
-    ...fusionContract,
-    abi: fusionAbi,
-    functionName: "nextId",
-    query: { refetchInterval: 8000 }
+  const { isConnected, ownedTokens } = useOwnedTokens({
+    sortBy: "tierThenId"
   });
-
-  const tokenIds = useMemo(() => {
-    const upperBound = Number(nextId ?? BigInt(1)) - 1;
-    if (upperBound <= 0) {
-      return [];
-    }
-
-    return maxScan.slice(0, Math.min(maxScan.length, upperBound));
-  }, [nextId]);
-
-  const { data: tokenReads } = useReadContracts({
-    contracts: tokenIds.flatMap((tokenId) => [
-      { ...fusionContract, abi: fusionAbi, functionName: "ownerOf", args: [tokenId] },
-      { ...fusionContract, abi: fusionAbi, functionName: "tierOf", args: [tokenId] }
-    ]),
-    allowFailure: true,
-    query: {
-      enabled: tokenIds.length > 0,
-      refetchInterval: 10000
-    }
-  });
-
-  const ownedTokens = useMemo<TokenRecord[]>(() => {
-    if (!address || !tokenReads?.length) {
-      return [];
-    }
-
-    const normalized = address.toLowerCase();
-    const items: TokenRecord[] = [];
-
-    for (let index = 0; index < tokenIds.length; index += 1) {
-      const owner = tokenReads[index * 2]?.result as string | undefined;
-      const tier = Number(tokenReads[index * 2 + 1]?.result ?? BigInt(0));
-      if (owner?.toLowerCase() === normalized && tier > 0) {
-        items.push({ tokenId: Number(tokenIds[index]), tier });
-      }
-    }
-
-    return items.sort((a, b) => a.tier - b.tier || a.tokenId - b.tokenId);
-  }, [address, tokenIds, tokenReads]);
 
   const grouped = useMemo(() => summarizeByTier(ownedTokens), [ownedTokens]);
 

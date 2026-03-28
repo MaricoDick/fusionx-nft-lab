@@ -1,29 +1,30 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "@/components/app-providers";
+import { APP_NAME, APP_URL, BASE_APP_ID, TALENT_VERIFICATION } from "@/lib/env";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fusionx-nft-lab.vercel.app";
+const metadataBase = new URL(APP_URL);
 
 export const metadata: Metadata = {
-  title: "FusionX NFT Lab",
+  title: APP_NAME,
   description: "Burn multiple NFTs to mint higher-tier outcomes, with rarity shaped by onchain probability.",
-  applicationName: "FusionX NFT Lab",
-  metadataBase: new URL(appUrl),
+  applicationName: APP_NAME,
+  metadataBase,
   openGraph: {
-    title: "FusionX NFT Lab",
+    title: APP_NAME,
     description: "GameFi + NFT Utility Mini App",
-    url: appUrl,
-    siteName: "FusionX NFT Lab",
+    url: APP_URL,
+    siteName: APP_NAME,
     images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "FusionX NFT Lab" }]
   },
   twitter: {
     card: "summary_large_image",
-    title: "FusionX NFT Lab",
+    title: APP_NAME,
     description: "Burn 3 NFTs, fuse rarity, and mint higher tiers on Base.",
     images: ["/og-image.svg"]
   },
   alternates: {
-    canonical: appUrl
+    canonical: APP_URL
   }
 };
 
@@ -35,11 +36,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="base:app_id" content="69c5fc322f29a15e2b91ecec" />
-        <meta
-          name="talentapp:project_verification"
-          content="7433cbaee5897d6ff2648b1142cadbfc4e595f8971c0b876a6bf19e50870b9fdb98c9bcb77149907a1d39216b706dab80303f1e25e46b983e72fb80a362b454b"
-        />
+        {BASE_APP_ID ? <meta name="base:app_id" content={BASE_APP_ID} /> : null}
+        {TALENT_VERIFICATION ? <meta name="talentapp:project_verification" content={TALENT_VERIFICATION} /> : null}
       </head>
       <body>
         <AppProviders>{children}</AppProviders>

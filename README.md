@@ -8,7 +8,7 @@ FusionX NFT Lab is a Base Mini App for NFT fusion gameplay. Users mint Tier 1 NF
 - RainbowKit + wagmi wallet connection on Base
 - Mint and fuse flows for the FusionX contract
 - Base app metadata and Talent verification tags
-- ERC-8021 attribution data suffix placeholder wired into wagmi config
+- ERC-8021 attribution data suffix wired into wagmi config
 - Transaction attribution tracking in `utils/track.js`
 
 ## Routes
@@ -23,6 +23,12 @@ FusionX NFT Lab is a Base Mini App for NFT fusion gameplay. Users mint Tier 1 NF
 ```bash
 npm install
 npm run build
+npm run lint
 ```
 
 Set environment variables from `.env.example` when needed.
+
+Required variables for production:
+
+- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
+- `NEXT_PUBLIC_BASE_APP_ID`

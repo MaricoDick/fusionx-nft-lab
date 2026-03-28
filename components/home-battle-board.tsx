@@ -1,19 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { fusionAbi, fusionContract } from "@/lib/contracts";
 import { wagmiConfig } from "@/app/wagmi";
 import { getTierLabel } from "@/lib/fusion";
 import { trackTransaction } from "@/utils/track";
-
-type OwnedToken = {
-  tokenId: number;
-  tier: number;
-};
-
-const scanWindow = Array.from({ length: 36 }, (_, index) => BigInt(index + 1));
+import { useOwnedTokens } from "@/lib/use-owned-tokens";
 
 const opponentSquad = [
   { name: "Sun Sprout", tier: 2, mood: "Sunny shield" },
@@ -46,66 +40,15 @@ const battleFeed = [
 ];
 
 export function HomeBattleBoard() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, ownedTokens, refetchOwnedTokens } = useOwnedTokens({
+    sortBy: "tierThenId"
+  });
   const { writeContractAsync, isPending } = useWriteContract();
   const [battlePlan, setBattlePlan] = useState(25);
   const [draggedTokenId, setDraggedTokenId] = useState<number | null>(null);
   const [formation, setFormation] = useState<Array<number | null>>([null, null, null]);
   const [message, setMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
-  const { data: nextId } = useReadContract({
-    ...fusionContract,
-    abi: fusionAbi,
-    functionName: "nextId",
-    query: { refetchInterval: 8000 }
-  });
-
-  const tokenIds = useMemo(() => {
-    const upperBound = Number(nextId ?? BigInt(1)) - 1;
-    if (upperBound <= 0) return [];
-    return scanWindow.slice(0, Math.min(upperBound, scanWindow.length));
-  }, [nextId]);
-
-  const { data: tokenReads, refetch } = useReadContracts({
-    contracts: tokenIds.flatMap((tokenId) => [
-      {
-        ...fusionContract,
-        abi: fusionAbi,
-        functionName: "ownerOf",
-        args: [tokenId]
-      },
-      {
-        ...fusionContract,
-        abi: fusionAbi,
-        functionName: "tierOf",
-        args: [tokenId]
-      }
-    ]),
-    allowFailure: true,
-    query: {
-      enabled: tokenIds.length > 0,
-      refetchInterval: 10000
-    }
-  });
-
-  const ownedTokens = useMemo<OwnedToken[]>(() => {
-    if (!address || !tokenReads?.length) return [];
-
-    const normalized = address.toLowerCase();
-    const items: OwnedToken[] = [];
-
-    for (let index = 0; index < tokenIds.length; index += 1) {
-      const owner = tokenReads[index * 2]?.result as string | undefined;
-      const tier = Number(tokenReads[index * 2 + 1]?.result ?? BigInt(0));
-
-      if (owner?.toLowerCase() === normalized && tier > 0) {
-        items.push({ tokenId: Number(tokenIds[index]), tier });
-      }
-    }
-
-    return items.sort((a, b) => a.tier - b.tier || a.tokenId - b.tokenId);
-  }, [address, tokenIds, tokenReads]);
 
   const assignedIds = useMemo(() => formation.filter((item): item is number => item !== null), [formation]);
 
@@ -165,10 +108,10 @@ export function HomeBattleBoard() {
         functionName: "mint"
       });
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
+      trackTransaction(address, txHash, "mint");
       setMessage("");
       setSuccessMessage(`Mint confirmed: ${txHash}`);
-      await refetch();
+      await refetchOwnedTokens();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Mint failed. Please try again.");
     }
@@ -196,11 +139,11 @@ export function HomeBattleBoard() {
       });
 
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
+      trackTransaction(address, txHash, "fuse");
       setFormation([null, null, null]);
       setMessage("");
       setSuccessMessage(`Battle confirmed: ${txHash}`);
-      await refetch();
+      await refetchOwnedTokens();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Battle failed. Please try again.");
     }

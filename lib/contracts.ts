@@ -1,7 +1,15 @@
-import type { Abi } from "viem";
+import type { Abi, Address } from "viem";
+import { isAddress } from "viem";
+import { FUSION_CONTRACT_ADDRESS } from "@/lib/env";
+
+if (!isAddress(FUSION_CONTRACT_ADDRESS)) {
+  throw new Error(
+    "Invalid NEXT_PUBLIC_FUSION_CONTRACT_ADDRESS. Please provide a valid 0x-prefixed contract address."
+  );
+}
 
 export const fusionContract = {
-  address: "0x6287A2bfc3E3de9C19cCe763B738df8C01b902cd" as const
+  address: FUSION_CONTRACT_ADDRESS as Address
 };
 
 export const fusionAbi = [
@@ -27,6 +35,7 @@ export const fusionAbi = [
     inputs: [{ name: "user", type: "address" }],
     outputs: [{ name: "", type: "uint256" }]
   },
+  { type: "function", name: "totalSupply", stateMutability: "view", inputs: [], outputs: [{ name: "", type: "uint256" }] },
   { type: "function", name: "mint", stateMutability: "nonpayable", inputs: [], outputs: [] },
   {
     type: "function",

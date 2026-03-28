@@ -1,90 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useMemo, useState } from "react";
+import { useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { fusionAbi, fusionContract } from "@/lib/contracts";
 import { getTierLabel, summarizeByTier } from "@/lib/fusion";
 import { trackTransaction } from "@/utils/track";
 import { wagmiConfig } from "@/app/wagmi";
-
-type TokenRecord = {
-  tokenId: number;
-  tier: number;
-};
-
-const scanWindow = Array.from({ length: 36 }, (_, index) => BigInt(index + 1));
+import { useOwnedTokens } from "@/lib/use-owned-tokens";
 
 export function LabView() {
-  const { address, isConnected } = useAccount();
   const [selectedTier, setSelectedTier] = useState<number>(1);
-  const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
+  const [selectedTokensByScope, setSelectedTokensByScope] = useState<Record<string, number[]>>({});
   const [feedback, setFeedback] = useState<string>("");
   const [successNote, setSuccessNote] = useState<string>("");
   const { writeContractAsync, isPending } = useWriteContract();
-
-  const { data: nextId } = useReadContract({
-    ...fusionContract,
-    abi: fusionAbi,
-    functionName: "nextId",
-    query: {
-      refetchInterval: 8000
-    }
+  const { address, isConnected, ownedTokens, refetchOwnedTokens } = useOwnedTokens({
+    sortBy: "tokenId"
   });
-
-  const tokenIds = useMemo(() => {
-    const upperBound = Number(nextId ?? BigInt(1)) - 1;
-    if (upperBound <= 0) {
-      return [];
-    }
-
-    const count = Math.min(upperBound, scanWindow.length);
-    return scanWindow.slice(0, count);
-  }, [nextId]);
-
-  const { data: tokenReads, refetch } = useReadContracts({
-    contracts: tokenIds.flatMap((tokenId) => [
-      {
-        ...fusionContract,
-        abi: fusionAbi,
-        functionName: "ownerOf",
-        args: [tokenId]
-      },
-      {
-        ...fusionContract,
-        abi: fusionAbi,
-        functionName: "tierOf",
-        args: [tokenId]
-      }
-    ]),
-    allowFailure: true,
-    query: {
-      enabled: tokenIds.length > 0,
-      refetchInterval: 10000
-    }
-  });
-
-  const ownedTokens = useMemo<TokenRecord[]>(() => {
-    if (!address || !tokenReads?.length) {
-      return [];
-    }
-
-    const normalized = address.toLowerCase();
-    const items: TokenRecord[] = [];
-
-    for (let index = 0; index < tokenIds.length; index += 1) {
-      const ownerResult = tokenReads[index * 2];
-      const tierResult = tokenReads[index * 2 + 1];
-      const owner = ownerResult?.result as string | undefined;
-      const tier = Number(tierResult?.result ?? BigInt(0));
-
-      if (owner?.toLowerCase() === normalized && tier > 0) {
-        items.push({ tokenId: Number(tokenIds[index]), tier });
-      }
-    }
-
-    return items.sort((a, b) => a.tokenId - b.tokenId);
-  }, [address, tokenIds, tokenReads]);
+  const selectionScope = `${address ?? "disconnected"}:${selectedTier}`;
+  const selectedTokens = selectedTokensByScope[selectionScope] ?? [];
 
   const currentTierTokens = useMemo(
     () => ownedTokens.filter((token) => token.tier === selectedTier),
@@ -93,23 +28,21 @@ export function LabView() {
 
   const summary = useMemo(() => summarizeByTier(ownedTokens), [ownedTokens]);
 
-  useEffect(() => {
-    setSelectedTokens([]);
-  }, [selectedTier, address]);
-
   const toggleToken = (tokenId: number) => {
     setFeedback("");
     setSuccessNote("");
-    setSelectedTokens((current) => {
-      if (current.includes(tokenId)) {
-        return current.filter((item) => item !== tokenId);
+    setSelectedTokensByScope((current) => {
+      const scoped = current[selectionScope] ?? [];
+
+      if (scoped.includes(tokenId)) {
+        return { ...current, [selectionScope]: scoped.filter((item) => item !== tokenId) };
       }
 
-      if (current.length >= 3) {
+      if (scoped.length >= 3) {
         return current;
       }
 
-      return [...current, tokenId];
+      return { ...current, [selectionScope]: [...scoped, tokenId] };
     });
   };
 
@@ -129,10 +62,10 @@ export function LabView() {
       });
 
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
+      trackTransaction(address, txHash, "mint");
       setFeedback("");
       setSuccessNote(`Mint confirmed: ${txHash}`);
-      await refetch();
+      await refetchOwnedTokens();
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Mint failed. Please try again.");
     }
@@ -160,11 +93,11 @@ export function LabView() {
       });
 
       await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      trackTransaction("app-001", "FusionX NFT Lab", address, txHash);
+      trackTransaction(address, txHash, "fuse");
       setFeedback("");
       setSuccessNote(`Fusion confirmed: ${txHash}`);
-      setSelectedTokens([]);
-      await refetch();
+      setSelectedTokensByScope((current) => ({ ...current, [selectionScope]: [] }));
+      await refetchOwnedTokens();
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Fusion failed. Please try again.");
     }
@@ -223,7 +156,11 @@ export function LabView() {
                 key={tier}
                 type="button"
                 className={`button ${selectedTier === tier ? "button-primary" : "button-secondary"}`}
-                onClick={() => setSelectedTier(tier)}
+                onClick={() => {
+                  setSelectedTier(tier);
+                  const nextScope = `${address ?? "disconnected"}:${tier}`;
+                  setSelectedTokensByScope((current) => ({ ...current, [nextScope]: [] }));
+                }}
               >
                 {getTierLabel(tier)}
               </button>
